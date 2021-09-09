@@ -1,23 +1,9 @@
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-#cmake_policy(SET CMP0022 NEW)
-#cmake_policy(SET CMP0023 NEW)
-
-# Use compiler ID "AppleClang" instead of "Clang" for XCode.
-# Not setting this sometimes makes XCode C compiler gets detected as "Clang",
-# even when the C++ one is detected as "AppleClang".
-cmake_policy(SET CMP0010 NEW)
-cmake_policy(SET CMP0025 NEW)
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
 # Suppress warning flags in default MSVC configuration.  It's not
 # mandatory that we do this (and we don't if cmake is old), but it's
 # nice when it's possible, and it's possible on our Windows configs.
-if(NOT CMAKE_VERSION VERSION_LESS 3.15.0)
-  cmake_policy(SET CMP0092 NEW)
-endif()
-
-if(NOT CMAKE_VERSION VERSION_LESS 3.10)
-  set(FIND_CUDA_MODULE_DEPRECATED ON)
-endif()
+cmake_policy(SET CMP0092 NEW)
 
 # ---[ Project and semantic versioning.
 project(Torch CXX C)
@@ -31,12 +17,6 @@ endif()
 set(CMAKE_INSTALL_MESSAGE NEVER)
 
 # check and set CMAKE_CXX_STANDARD
-string(FIND "${CMAKE_CXX_FLAGS}" "-std=c++" env_cxx_standard)
-if(env_cxx_standard GREATER -1)
-  message(
-      WARNING "C++ standard version definition detected in environment variable."
-      "PyTorch requires -std=c++14. Please remove -std=c++ settings in your environment.")
-endif()
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_C_STANDARD 11)
 
@@ -57,10 +37,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #      find_package(Caffe2 REQUIRED)
 #    endif()
 set(CAFFE2_CMAKE_BUILDING_WITH_MAIN_REPO ON)
-
-# Googletest's cmake files are going to set it on once they are processed. Let's
-# set it at the very beginning so that the entire build is deterministic.
-set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 if(NOT DEFINED BLAS_SET_BY_USER)
   if(DEFINED BLAS)
