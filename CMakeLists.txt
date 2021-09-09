@@ -17,7 +17,8 @@ endif()
 set(CMAKE_INSTALL_MESSAGE NEVER)
 
 # check and set CMAKE_CXX_STANDARD
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)
 
 if(DEFINED GLIBCXX_USE_CXX11_ABI)
@@ -747,7 +748,6 @@ if(NOT MSVC)
     string(APPEND CMAKE_CXX_FLAGS " -Wno-unused-private-field")
     string(APPEND CMAKE_CXX_FLAGS " -Wno-inconsistent-missing-override")
     string(APPEND CMAKE_CXX_FLAGS " -Wno-aligned-allocation-unavailable")
-    string(APPEND CMAKE_CXX_FLAGS " -Wno-c++14-extensions")
     string(APPEND CMAKE_CXX_FLAGS " -Wno-constexpr-not-const")
     string(APPEND CMAKE_CXX_FLAGS " -Wno-missing-braces")
     string(APPEND CMAKE_CXX_FLAGS " -Qunused-arguments")
