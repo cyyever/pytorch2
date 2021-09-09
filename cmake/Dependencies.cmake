@@ -1131,7 +1131,8 @@ if(USE_CUDA)
   if(CAFFE2_USE_TENSORRT)
     list(APPEND Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS caffe2::tensorrt)
   else()
-  caffe2_update_option(USE_TENSORRT OFF)
+    caffe2_update_option(USE_TENSORRT OFF)
+  endif()
 endif()
 
 # ---[ cuDNN
