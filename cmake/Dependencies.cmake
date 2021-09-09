@@ -1113,40 +1113,25 @@ if(USE_CUDA)
   set(CAFFE2_USE_NVRTC ${USE_NVRTC})
   set(CAFFE2_USE_TENSORRT ${USE_TENSORRT})
   include(${CMAKE_CURRENT_LIST_DIR}/public/cuda.cmake)
-  if(CAFFE2_USE_CUDA)
-    # A helper variable recording the list of Caffe2 dependent libraries
-    # torch::cudart is dealt with separately, due to CUDA_ADD_LIBRARY
-    # design reason (it adds CUDA_LIBRARIES itself).
-    set(Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS
-      caffe2::cufft caffe2::curand caffe2::cublas)
-    if(CAFFE2_USE_NVRTC)
-      list(APPEND Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS caffe2::cuda caffe2::nvrtc)
-    else()
-      caffe2_update_option(USE_NVRTC OFF)
-    endif()
-    if(CAFFE2_USE_CUDNN)
-      list(APPEND Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS caffe2::cudnn-public)
-    else()
-      caffe2_update_option(USE_CUDNN OFF)
-    endif()
-    if(CAFFE2_USE_TENSORRT)
-      list(APPEND Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS caffe2::tensorrt)
-    else()
-      caffe2_update_option(USE_TENSORRT OFF)
-    endif()
+  # A helper variable recording the list of Caffe2 dependent libraries
+  # torch::cudart is dealt with separately, due to CUDA_ADD_LIBRARY
+  # design reason (it adds CUDA_LIBRARIES itself).
+  set(Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS
+    caffe2::cufft caffe2::curand caffe2::cublas)
+  if(CAFFE2_USE_NVRTC)
+    list(APPEND Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS caffe2::cuda caffe2::nvrtc)
   else()
-    message(WARNING
-      "Not compiling with CUDA. Suppress this warning with "
-      "-DUSE_CUDA=OFF.")
-    caffe2_update_option(USE_CUDA OFF)
-    caffe2_update_option(USE_CUDNN OFF)
     caffe2_update_option(USE_NVRTC OFF)
-    caffe2_update_option(USE_TENSORRT OFF)
-    set(CAFFE2_USE_CUDA OFF)
-    set(CAFFE2_USE_CUDNN OFF)
-    set(CAFFE2_USE_NVRTC OFF)
-    set(CAFFE2_USE_TENSORRT OFF)
   endif()
+  if(CAFFE2_USE_CUDNN)
+    list(APPEND Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS caffe2::cudnn-public)
+  else()
+    caffe2_update_option(USE_CUDNN OFF)
+  endif()
+  if(CAFFE2_USE_TENSORRT)
+    list(APPEND Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS caffe2::tensorrt)
+  else()
+  caffe2_update_option(USE_TENSORRT OFF)
 endif()
 
 # ---[ cuDNN
@@ -1533,23 +1518,15 @@ if(NOT INTERN_BUILD_MOBILE)
   list(APPEND CUDA_NVCC_FLAGS -Wno-deprecated-gpu-targets)
   list(APPEND CUDA_NVCC_FLAGS --expt-extended-lambda)
 
-  if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_STANDARD 14)
-  endif()
-
   list(APPEND CUDA_NVCC_FLAGS ${TORCH_NVCC_FLAGS})
   if(CMAKE_POSITION_INDEPENDENT_CODE AND NOT MSVC)
     list(APPEND CUDA_NVCC_FLAGS "-Xcompiler" "-fPIC")
   endif()
 
-  if(CUDA_HAS_FP16 OR NOT ${CUDA_VERSION} LESS 7.5)
-    message(STATUS "Found CUDA with FP16 support, compiling with torch.cuda.HalfTensor")
-    list(APPEND CUDA_NVCC_FLAGS "-DCUDA_HAS_FP16=1" "-D__CUDA_NO_HALF_OPERATORS__" "-D__CUDA_NO_HALF_CONVERSIONS__"
-      "-D__CUDA_NO_BFLOAT16_CONVERSIONS__" "-D__CUDA_NO_HALF2_OPERATORS__")
-    add_compile_options(-DCUDA_HAS_FP16=1)
-  else()
-    message(STATUS "Could not find CUDA with FP16 support, compiling without torch.CudaHalfTensor")
-  endif()
+  message(STATUS "Found CUDA with FP16 support, compiling with torch.cuda.HalfTensor")
+  list(APPEND CUDA_NVCC_FLAGS "-DCUDA_HAS_FP16=1" "-D__CUDA_NO_HALF_OPERATORS__" "-D__CUDA_NO_HALF_CONVERSIONS__"
+    "-D__CUDA_NO_BFLOAT16_CONVERSIONS__" "-D__CUDA_NO_HALF2_OPERATORS__")
+  add_compile_options(-DCUDA_HAS_FP16=1)
 
   string(APPEND CMAKE_C_FLAGS_RELEASE " -DNDEBUG")
   string(APPEND CMAKE_CXX_FLAGS_RELEASE " -DNDEBUG")
