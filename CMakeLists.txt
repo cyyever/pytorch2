@@ -1,12 +1,7 @@
 cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
-# Suppress warning flags in default MSVC configuration.  It's not
-# mandatory that we do this (and we don't if cmake is old), but it's
-# nice when it's possible, and it's possible on our Windows configs.
-cmake_policy(SET CMP0092 NEW)
-
 # ---[ Project and semantic versioning.
-project(Torch CXX C)
+project(Torch LANGUAGES CXX C)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(LINUX TRUE)
